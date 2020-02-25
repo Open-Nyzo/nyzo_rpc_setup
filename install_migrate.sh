@@ -16,6 +16,8 @@ sudo cp nyzoVerifier.conf /etc/supervisor/conf.d
 ######################### args: nickname verifier_private_seed
 echo $1 > /var/lib/nyzo/production/nickname
 echo $2 > /var/lib/nyzo/production/verifier_private_seed
+######################### track the blockchain continuously if in candidate state
+echo 'always_track_blockchain=1' > /var/lib/nyzo/production/preferences
 #########################
 sudo supervisorctl reload
 sudo supervisorctl status
