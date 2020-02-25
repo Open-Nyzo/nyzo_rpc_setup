@@ -15,6 +15,8 @@ sudo cp trusted_entry_points /var/lib/nyzo/production
 sudo cp nyzoVerifier.conf /etc/supervisor/conf.d
 ######################### args: nickname
 echo $1 > /var/lib/nyzo/production/nickname
+######################### track the blockchain continuously if in candidate state
+echo 'always_track_blockchain=1' > /var/lib/nyzo/production/preferences
 #########################
 sudo supervisorctl reload
 sudo supervisorctl status
