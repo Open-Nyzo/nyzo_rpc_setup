@@ -19,6 +19,7 @@ def handleStruct(method, params, request_identifier):
     rpc_handle_struct['params'] = params
     rpc_handle_struct['id'] = request_identifier
     response = requests.post(rpc_base_url, json=rpc_handle_struct)
+    print(response.content.decode('utf-8'))
     if response.status_code == 200:
         return [True, ast.literal_eval(response.content.decode('utf-8'))]
     else:
@@ -74,9 +75,9 @@ def methodBroadcastSignature(hex_signature, request_identifier):
     else:
         print('error')
         return False
-    
+
 # address_type = private_seed / private_nyzo_string
-def methodRawTransaction(request_identifier, address_type, typed_receiver, typed_sender, typed_private_key, sender_data, broadcast=True, timestamp=None, signature=None):
+def methodRawTransaction(request_identifier, amount, address_type, typed_receiver, typed_sender, typed_private_key, sender_data, broadcast=True, timestamp=None, signature=None):
     if address_type == 'private_seed':
         recv_handled = 'receiver_identifier'
         sendr_handled = 'sender_identifier'
@@ -86,18 +87,19 @@ def methodRawTransaction(request_identifier, address_type, typed_receiver, typed
     else:
         print('error - address_type invalid')
         return False
-    
+
     params = {
         address_type: typed_private_key,
         recv_handled: typed_receiver,
         sendr_handled: typed_sender,
         'sender_data': sender_data,
-        'broadcast': broadcast
+        'broadcast': broadcast,
+        'amount': amount
     }
-    
+
     if timestamp is not None:
         params['timestamp'] = timestamp
-        
+
     if signature is not None:
         params['signature'] = signature
 
@@ -107,8 +109,9 @@ def methodRawTransaction(request_identifier, address_type, typed_receiver, typed
         return res[1]
     else:
         print('error')
+        print(res)
         return False
-    
+
 def methodTransactionConfirmed(request_identifier, tx_signature):
     params = {'tx': tx_signature}
     res = handleStruct('transactionconfirmed', params, request_identifier)
@@ -118,7 +121,7 @@ def methodTransactionConfirmed(request_identifier, tx_signature):
     else:
         print('error')
         return False
-    
+
 def methodCycleInfo(request_identifier):
     params = {}
     res = handleStruct('cycleinfo', params, request_identifier)
@@ -140,4 +143,9 @@ def methodBlockInfo(request_identifier, block_height):
     else:
         print('error')
         return False
-    
+
+# example
+d = methodRawTransaction('tx01', 901, 'private_nyzo_string', 'id__receiver', 'id__sender', 'key_', '', broadcast=True, timestamp=None, signature=None)
+if d:
+    methodBroadcastSignature(d, 'tx02')
+
